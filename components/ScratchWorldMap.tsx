@@ -3,7 +3,11 @@
 import { useMemo, useState } from "react";
 import { Minus, Plus, RotateCcw, Sparkles } from "lucide-react";
 import type { CSSProperties, MouseEvent } from "react";
-import type { MapLayer, MapLocation, MapMetric } from "@/types/travel";
+import type {
+  MapLayer,
+  MapLocation,
+  MapMetric,
+} from "@/types/travel";
 
 type ScratchWorldMapProps = {
   locations: MapLocation[];
@@ -35,121 +39,468 @@ const countryLines = [
   "M775 355 812 416M821 332 858 407",
 ];
 
-function getValue(location: MapLocation, metric: MapMetric) {
+function getValue(
+  location: MapLocation,
+  metric: MapMetric,
+) {
   if (metric === "visits") return location.visits;
   if (metric === "days") return location.days;
-  return location.visits * 4 + location.days + location.returnRate / 2;
+
+  return (
+    location.visits * 4 +
+    location.days +
+    location.returnRate / 2
+  );
 }
 
-export function ScratchWorldMap({ locations, layer, metric, selectedId, onSelect, summary }: ScratchWorldMapProps) {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+function revealColor(intensity: number) {
+  const lightness = 76 - intensity * 29;
+  return `hsl(4 82% ${lightness}%)`;
+}
+
+export function ScratchWorldMap({
+  locations,
+  layer,
+  metric,
+  selectedId,
+  onSelect,
+  summary,
+}: ScratchWorldMapProps) {
+  const [hoveredId, setHoveredId] =
+    useState<string | null>(null);
+
   const [zoom, setZoom] = useState(1);
-  const [focus, setFocus] = useState({ x: 50, y: 50 });
 
-  const maxValue = useMemo(() => Math.max(...locations.map((location) => getValue(location, metric)), 1), [locations, metric]);
-  const hovered = locations.find((location) => location.id === hoveredId) ?? null;
+  const [focus, setFocus] = useState({
+    x: 50,
+    y: 50,
+  });
 
-  function updateFocus(event: MouseEvent<HTMLDivElement>) {
-    const rect = event.currentTarget.getBoundingClientRect();
+  const maxValue = useMemo(
+    () =>
+      Math.max(
+        ...locations.map((location) =>
+          getValue(location, metric),
+        ),
+        1,
+      ),
+    [locations, metric],
+  );
+
+  const hovered =
+    locations.find(
+      (location) => location.id === hoveredId,
+    ) ?? null;
+
+  function updateFocus(
+    event: MouseEvent<HTMLDivElement>,
+  ) {
+    if (zoom === 1) return;
+
+    const rect =
+      event.currentTarget.getBoundingClientRect();
+
     setFocus({
-      x: ((event.clientX - rect.left) / rect.width) * 100,
-      y: ((event.clientY - rect.top) / rect.height) * 100,
+      x:
+        ((event.clientX - rect.left) /
+          rect.width) *
+        100,
+      y:
+        ((event.clientY - rect.top) /
+          rect.height) *
+        100,
     });
   }
 
   function focusLocation(location: MapLocation) {
     setHoveredId(location.id);
-    setFocus({ x: (location.x / 1000) * 100, y: (location.y / 520) * 100 });
+
+    setFocus({
+      x: (location.x / 1000) * 100,
+      y: (location.y / 520) * 100,
+    });
+
+    setZoom((currentZoom) =>
+      Math.max(currentZoom, 1.14),
+    );
+  }
+
+  function resetMap() {
+    setZoom(1);
+    setFocus({ x: 50, y: 50 });
+    setHoveredId(null);
   }
 
   const canvasStyle = {
-    "--map-scale": zoom,
-    "--map-origin-x": `${focus.x}%`,
-    "--map-origin-y": `${focus.y}%`,
+    "--poster-scale": zoom,
+    "--poster-origin-x": `${focus.x}%`,
+    "--poster-origin-y": `${focus.y}%`,
   } as CSSProperties;
 
   return (
-    <div className="scratch-map">
+    <div className="poster-map">
       <div
-        className="scratch-map__viewport"
+        className="poster-map__viewport"
         onMouseLeave={() => setHoveredId(null)}
         onMouseMove={updateFocus}
       >
-        <div className="scratch-map__canvas" style={canvasStyle}>
-          <svg viewBox="0 0 1000 520" role="img" aria-label={`Mapa-múndi interativo com ${locations.length} cidades em destaque`}>
+        <div
+          className="poster-map__canvas"
+          style={canvasStyle}
+        >
+          <svg
+            aria-label={`Mapa-múndi pessoal aberto com ${locations.length} cidades em destaque`}
+            role="img"
+            viewBox="0 0 1000 520"
+          >
             <defs>
-              <linearGradient id="goldFoil" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stopColor="#8f6423" />
-                <stop offset="0.24" stopColor="#f8e39b" />
-                <stop offset="0.45" stopColor="#b98029" />
-                <stop offset="0.72" stopColor="#f5d77c" />
-                <stop offset="1" stopColor="#7a501b" />
+              <linearGradient
+                id="posterPaper"
+                x1="0"
+                x2="1"
+                y1="0"
+                y2="1"
+              >
+                <stop
+                  offset="0"
+                  stopColor="#f4ead8"
+                />
+                <stop
+                  offset="0.48"
+                  stopColor="#fffaf0"
+                />
+                <stop
+                  offset="1"
+                  stopColor="#eadbc3"
+                />
               </linearGradient>
-              <pattern id="foilHatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
-                <rect width="10" height="10" fill="url(#goldFoil)" />
-                <line x1="0" x2="0" y1="0" y2="10" stroke="#fff4be" strokeOpacity=".16" strokeWidth="2" />
+
+              <linearGradient
+                id="posterFoil"
+                x1="0"
+                x2="1"
+                y1="0"
+                y2="1"
+              >
+                <stop
+                  offset="0"
+                  stopColor="#8b6530"
+                />
+                <stop
+                  offset="0.2"
+                  stopColor="#dec27f"
+                />
+                <stop
+                  offset="0.42"
+                  stopColor="#aa7c36"
+                />
+                <stop
+                  offset="0.7"
+                  stopColor="#f2dda3"
+                />
+                <stop
+                  offset="1"
+                  stopColor="#8d642d"
+                />
+              </linearGradient>
+
+              <pattern
+                height="12"
+                id="posterHatch"
+                patternTransform="rotate(24)"
+                patternUnits="userSpaceOnUse"
+                width="12"
+              >
+                <rect
+                  fill="url(#posterFoil)"
+                  height="12"
+                  width="12"
+                />
+
+                <line
+                  stroke="#fff6ce"
+                  strokeOpacity=".24"
+                  strokeWidth="2"
+                  x1="0"
+                  x2="0"
+                  y1="0"
+                  y2="12"
+                />
               </pattern>
-              <filter id="roughReveal" x="-30%" y="-30%" width="160%" height="160%">
-                <feTurbulence baseFrequency="0.035" numOctaves="3" seed="12" type="fractalNoise" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" />
+
+              <pattern
+                height="7"
+                id="paperGrain"
+                patternUnits="userSpaceOnUse"
+                width="7"
+              >
+                <circle
+                  cx="1"
+                  cy="2"
+                  fill="#6f5735"
+                  opacity=".055"
+                  r=".8"
+                />
+
+                <circle
+                  cx="5"
+                  cy="5"
+                  fill="#ffffff"
+                  opacity=".32"
+                  r=".7"
+                />
+              </pattern>
+
+              <filter
+                id="posterRough"
+                height="170%"
+                width="170%"
+                x="-35%"
+                y="-35%"
+              >
+                <feTurbulence
+                  baseFrequency="0.045"
+                  numOctaves="3"
+                  result="noise"
+                  seed="18"
+                  type="fractalNoise"
+                />
+
+                <feDisplacementMap
+                  in="SourceGraphic"
+                  in2="noise"
+                  scale="6"
+                />
               </filter>
-              <filter id="mapGlow" x="-100%" y="-100%" width="300%" height="300%">
-                <feGaussianBlur stdDeviation="7" />
+
+              <filter
+                id="posterShadow"
+                height="180%"
+                width="180%"
+                x="-40%"
+                y="-40%"
+              >
+                <feDropShadow
+                  dx="0"
+                  dy="5"
+                  floodColor="#594222"
+                  floodOpacity=".24"
+                  stdDeviation="6"
+                />
               </filter>
-              <radialGradient id="oceanLight">
-                <stop offset="0" stopColor="#19334a" stopOpacity=".72" />
-                <stop offset="1" stopColor="#07111f" stopOpacity="0" />
-              </radialGradient>
             </defs>
 
-            <rect width="1000" height="520" fill="#07111f" />
-            <circle cx="500" cy="250" r="400" fill="url(#oceanLight)" />
+            <rect
+              fill="url(#posterPaper)"
+              height="520"
+              width="1000"
+            />
 
-            <g className="map-grid" aria-hidden="true">
-              {[95, 175, 255, 335, 415].map((y) => <line key={y} x1="45" y1={y} x2="955" y2={y} />)}
-              {[130, 290, 450, 610, 770, 930].map((x) => <path key={x} d={`M${x} 46 Q${x - 35} 260 ${x} 474`} />)}
+            <rect
+              fill="url(#paperGrain)"
+              height="520"
+              width="1000"
+            />
+
+            <g
+              aria-hidden="true"
+              className="poster-map__grid"
+            >
+              {[95, 175, 255, 335, 415].map(
+                (y) => (
+                  <line
+                    key={y}
+                    x1="45"
+                    x2="955"
+                    y1={y}
+                    y2={y}
+                  />
+                ),
+              )}
+
+              {[130, 290, 450, 610, 770, 930].map(
+                (x) => (
+                  <path
+                    d={`M${x} 46 Q${x - 35} 260 ${x} 474`}
+                    key={x}
+                  />
+                ),
+              )}
             </g>
 
-            <g className="foil-continents" aria-hidden="true">
-              {continentPaths.map((path, index) => <path d={path} key={index} />)}
-              {countryLines.map((path, index) => <path className="country-lines" d={path} key={index} />)}
+            <g
+              aria-hidden="true"
+              className="poster-map__continents"
+            >
+              {continentPaths.map(
+                (path, index) => (
+                  <path
+                    d={path}
+                    key={index}
+                  />
+                ),
+              )}
+
+              {countryLines.map(
+                (path, index) => (
+                  <path
+                    className="poster-map__country-lines"
+                    d={path}
+                    key={index}
+                  />
+                ),
+              )}
             </g>
 
-            <g className="ocean-labels" aria-hidden="true">
-              <text x="105" y="278">OCEANO PACÍFICO</text>
-              <text x="380" y="275">ATLÂNTICO</text>
-              <text x="660" y="318">OCEANO ÍNDICO</text>
-              <text x="742" y="88">ÁRTICO</text>
+            <g
+              aria-hidden="true"
+              className="poster-map__ocean-labels"
+            >
+              <text x="92" y="278">
+                OCEANO PACÍFICO
+              </text>
+
+              <text x="375" y="276">
+                ATLÂNTICO
+              </text>
+
+              <text x="665" y="320">
+                OCEANO ÍNDICO
+              </text>
+
+              <text x="735" y="83">
+                ÁRTICO
+              </text>
             </g>
 
-            <g className="compass" transform="translate(91 390)" aria-hidden="true">
-              <circle r="31" />
+            <g
+              aria-hidden="true"
+              className="poster-map__compass"
+              transform="translate(91 401)"
+            >
+              <circle r="30" />
+
               <path d="M0-27 6-6 0 0-6-6ZM0 27 5 7 0 2-5 7ZM-27 0-6-6 0 0-6 6ZM27 0 6-6 0 0 6 6Z" />
-              <text x="0" y="-37">N</text>
+
+              <text x="0" y="-37">
+                N
+              </text>
             </g>
 
-            <g className="revealed-locations">
+            <g className="poster-map__reveals">
               {locations.map((location) => {
-                const intensity = getValue(location, metric) / maxValue;
-                const isSelected = selectedId === location.id;
-                const isHovered = hoveredId === location.id;
-                const baseRadius = layer === "wishlist" ? 11 : layer === "community" ? 13 : 10;
-                const radius = baseRadius + intensity * (layer === "community" ? 18 : 14);
+                const intensity =
+                  getValue(location, metric) /
+                  maxValue;
+
+                const isSelected =
+                  selectedId === location.id;
+
+                const isHovered =
+                  hoveredId === location.id;
+
+                const baseRadius =
+                  layer === "wishlist" ? 10 : 12;
+
+                const radius =
+                  baseRadius + intensity * 14;
+
+                const fill =
+                  layer === "wishlist"
+                    ? "#fffaf0"
+                    : revealColor(intensity);
+
+                const stroke =
+                  layer === "wishlist"
+                    ? "#20aeb4"
+                    : revealColor(
+                        Math.min(
+                          1,
+                          intensity + 0.15,
+                        ),
+                      );
+
                 return (
                   <g
-                    className={`scratch-location scratch-location--${layer} ${isSelected ? "is-selected" : ""} ${isHovered ? "is-hovered" : ""}`}
-                    key={location.id}
                     aria-hidden="true"
+                    className={[
+                      "poster-reveal",
+                      `poster-reveal--${layer}`,
+                      isSelected
+                        ? "is-selected"
+                        : "",
+                      isHovered
+                        ? "is-hovered"
+                        : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    key={location.id}
                   >
-                    {layer !== "wishlist" && <circle className="location-glow" cx={location.x} cy={location.y} fill={location.color} r={radius * 2.15} filter="url(#mapGlow)" />}
-                    <circle className="scratch-fringe" cx={location.x} cy={location.y} r={radius + 5} stroke={location.color} />
-                    <circle className="scratch-reveal" cx={location.x} cy={location.y} fill={layer === "wishlist" ? "transparent" : location.color} r={radius} filter="url(#roughReveal)" />
-                    <circle className="location-pin" cx={location.x} cy={location.y} r={isSelected || isHovered ? 4.8 : 3.4} />
+                    <circle
+                      className="poster-reveal__fringe"
+                      cx={location.x}
+                      cy={location.y}
+                      fill="none"
+                      r={radius + 6}
+                      stroke={stroke}
+                    />
+
+                    <circle
+                      className="poster-reveal__area"
+                      cx={location.x}
+                      cy={location.y}
+                      fill={fill}
+                      filter="url(#posterRough)"
+                      r={radius}
+                      stroke={stroke}
+                    />
+
+                    <circle
+                      className="poster-reveal__pin"
+                      cx={location.x}
+                      cy={location.y}
+                      r={
+                        isSelected || isHovered
+                          ? 4.8
+                          : 3.4
+                      }
+                    />
+
                     {(isSelected || isHovered) && (
-                      <g className="map-label" transform={`translate(${location.x + 12} ${location.y - radius - 10})`}>
-                        <rect x="0" y="-24" width={Math.max(112, location.city.length * 8 + 28)} height="34" rx="8" />
-                        <text x="12" y="-8">{location.city}</text>
-                        <text className="map-label__country" x="12" y="3">{location.country}</text>
+                      <g
+                        className="poster-reveal__label"
+                        filter="url(#posterShadow)"
+                        transform={`translate(${location.x + 13} ${
+                          location.y -
+                          radius -
+                          10
+                        })`}
+                      >
+                        <rect
+                          height="36"
+                          rx="9"
+                          width={Math.max(
+                            116,
+                            location.city.length *
+                              8 +
+                              30,
+                          )}
+                          x="0"
+                          y="-25"
+                        />
+
+                        <text x="12" y="-8">
+                          {location.city}
+                        </text>
+
+                        <text
+                          className="poster-reveal__country"
+                          x="12"
+                          y="4"
+                        >
+                          {location.country}
+                        </text>
                       </g>
                     )}
                   </g>
@@ -157,44 +508,123 @@ export function ScratchWorldMap({ locations, layer, metric, selectedId, onSelect
               })}
             </g>
           </svg>
-          <div className="map-hotspots" aria-label="Cidades disponíveis no mapa">
+
+          <div
+            aria-label="Cidades disponíveis no mapa"
+            className="poster-map__hotspots"
+          >
             {locations.map((location) => (
               <button
                 aria-label={`${location.city}, ${location.country}`}
-                className={selectedId === location.id ? "map-hotspot is-selected" : "map-hotspot"}
+                className={
+                  selectedId === location.id
+                    ? "is-selected"
+                    : ""
+                }
                 key={location.id}
-                onClick={() => onSelect(location)}
-                onFocus={() => focusLocation(location)}
-                onMouseEnter={() => focusLocation(location)}
-                onMouseLeave={() => setHoveredId(null)}
-                style={{ left: `${(location.x / 1000) * 100}%`, top: `${(location.y / 520) * 100}%` }}
+                onClick={() =>
+                  onSelect(location)
+                }
+                onFocus={() =>
+                  focusLocation(location)
+                }
+                onMouseEnter={() =>
+                  focusLocation(location)
+                }
+                onMouseLeave={() =>
+                  setHoveredId(null)
+                }
+                style={{
+                  left: `${
+                    (location.x / 1000) * 100
+                  }%`,
+                  top: `${
+                    (location.y / 520) * 100
+                  }%`,
+                }}
                 type="button"
               />
             ))}
           </div>
         </div>
 
-        <div className="scratch-map__top-label"><Sparkles size={14} /> Passe o cursor para explorar</div>
-        <div className="scratch-map__zoom" aria-label="Controles de zoom">
-          <button type="button" onClick={() => setZoom((value) => Math.min(1.7, value + 0.15))} aria-label="Aumentar zoom"><Plus size={16} /></button>
-          <button type="button" onClick={() => setZoom((value) => Math.max(1, value - 0.15))} aria-label="Diminuir zoom"><Minus size={16} /></button>
-          <button type="button" onClick={() => { setZoom(1); setFocus({ x: 50, y: 50 }); }} aria-label="Redefinir zoom"><RotateCcw size={15} /></button>
+        <div className="poster-map__hint">
+          <Sparkles size={14} />
+          Passe o cursor para aproximar
         </div>
 
-        <div className={hovered ? "map-hover-card is-visible" : "map-hover-card"}>
+        <div
+          aria-label="Controles de zoom"
+          className="poster-map__zoom"
+        >
+          <button
+            aria-label="Aumentar zoom"
+            onClick={() =>
+              setZoom((value) =>
+                Math.min(1.7, value + 0.15),
+              )
+            }
+            type="button"
+          >
+            <Plus size={16} />
+          </button>
+
+          <button
+            aria-label="Diminuir zoom"
+            onClick={() =>
+              setZoom((value) =>
+                Math.max(1, value - 0.15),
+              )
+            }
+            type="button"
+          >
+            <Minus size={16} />
+          </button>
+
+          <button
+            aria-label="Redefinir zoom"
+            onClick={resetMap}
+            type="button"
+          >
+            <RotateCcw size={15} />
+          </button>
+        </div>
+
+        <div
+          className={
+            hovered
+              ? "poster-map__hover is-visible"
+              : "poster-map__hover"
+          }
+        >
           {hovered && (
             <>
               <span>{hovered.country}</span>
               <strong>{hovered.city}</strong>
-              <small>{hovered.lastActivity}</small>
+              <small>
+                {hovered.lastActivity}
+              </small>
             </>
           )}
         </div>
       </div>
 
-      <div className="scratch-map__footer">
-        <span className="foil-key"><i /> ainda não revelado</span>
-        <span className="color-key"><i /> cidade revelada</span>
+      <div className="poster-map__footer">
+        <span className="poster-map__key poster-map__key--foil">
+          <i />
+          Ainda não revelado
+        </span>
+
+        <span className="poster-map__key poster-map__key--visited">
+          <i />
+          Cidade visitada
+        </span>
+
+        <span className="poster-map__key poster-map__key--wishlist">
+          <i />
+          Quero visitar
+        </span>
+
         <strong>{summary}</strong>
       </div>
     </div>
