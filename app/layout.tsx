@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./travel-home.css";
+import "./travel-profile.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -41,6 +45,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        {/* eslint-disable-next-line @next/next/no-css-tags */}
+        <link
+          href="/maplibre/maplibre-gl.css"
+          rel="stylesheet"
+        />
+      </head>
+
       <body>{children}</body>
     </html>
   );
