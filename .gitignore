@@ -1,0 +1,24 @@
+# dependências
+/node_modules
+
+# Next.js
+/.next/
+/out/
+next-env.d.ts
+
+# variáveis locais e segredos
+.env*
+!.env.example
+
+# testes e cobertura
+/coverage
+
+# sistema e editores
+.DS_Store
+*.pem
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
