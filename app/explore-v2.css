@@ -1,0 +1,636 @@
+.explore-v2-shell {
+  background: #f7f7f4;
+}
+
+.explore-v2-page {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* HERO + MAPA */
+
+.explore-v2-hero {
+  background: #edf4f2;
+  height: clamp(
+    480px,
+    58vh,
+    650px
+  );
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.explore-v2-hero
+  > .real-map-shell {
+  height: 100%;
+  width: 100%;
+}
+
+.explore-v2-hero
+  .real-map-shell::after {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.98
+      )
+        0%,
+      rgba(
+        255,
+        255,
+        255,
+        0.92
+      )
+        22%,
+      rgba(
+        255,
+        255,
+        255,
+        0.42
+      )
+        42%,
+      transparent
+        66%
+    );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.explore-v2-copy {
+  left:
+    clamp(
+      22px,
+      2.7vw,
+      52px
+    );
+  max-width: 450px;
+  position: absolute;
+  top: 50%;
+  transform:
+    translateY(-50%);
+  z-index: 5;
+}
+
+.explore-v2-copy h1 {
+  color:
+    var(--travel-ink);
+  font-size:
+    clamp(
+      38px,
+      3.5vw,
+      62px
+    );
+  letter-spacing:
+    -0.055em;
+  line-height: 0.98;
+  margin:
+    13px 0 15px;
+}
+
+.explore-v2-copy p {
+  color:
+    var(--travel-muted);
+  font-size:
+    clamp(
+      12px,
+      0.95vw,
+      15px
+    );
+  line-height: 1.6;
+  margin: 0;
+  max-width: 390px;
+}
+
+.explore-v2-quick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 23px;
+}
+
+.explore-v2-quick-filters
+  button {
+  background: white;
+  border:
+    1px solid
+    var(--travel-line);
+  border-radius: 999px;
+  color: #4f5359;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 750;
+  min-height: 37px;
+  padding: 0 14px;
+}
+
+.explore-v2-quick-filters
+  button.is-active {
+  background:
+    var(--travel-ink);
+  border-color:
+    var(--travel-ink);
+  color: white;
+}
+
+.explore-v2-hero
+  .real-map-reset {
+  bottom: 22px;
+  left: auto;
+  right: 30px;
+  transform: none;
+}
+
+.explore-v2-hero
+  .real-map-reset:hover {
+  transform:
+    translateY(-2px);
+}
+
+/* CONTEÚDO */
+
+.explore-discovery-content {
+  display: grid;
+  gap: 12px;
+  padding:
+    18px 24px 50px;
+  width: 100%;
+}
+
+.explore-destination-section {
+  background: white;
+  border:
+    1px solid
+    var(--travel-line);
+  border-radius: 18px;
+  box-shadow:
+    0 7px 23px
+    rgba(
+      29,
+      34,
+      43,
+      0.045
+    );
+  overflow: hidden;
+  padding:
+    18px 18px 15px;
+  width: 100%;
+}
+
+.explore-destination-section__header {
+  align-items: flex-end;
+  display: flex;
+  gap: 20px;
+  justify-content:
+    space-between;
+  padding:
+    0 8px 14px;
+}
+
+.explore-destination-section__overline {
+  align-items: center;
+  color:
+    var(--travel-coral);
+  display: flex;
+  font-size: 8px;
+  font-weight: 850;
+  gap: 6px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.explore-destination-section__header
+  h2 {
+  color:
+    var(--travel-ink);
+  font-size:
+    clamp(
+      20px,
+      1.55vw,
+      27px
+    );
+  letter-spacing:
+    -0.04em;
+  line-height: 1;
+  margin:
+    6px 0 5px;
+}
+
+.explore-destination-section__header
+  p {
+  color:
+    var(--travel-muted);
+  font-size: 9px;
+  margin: 0;
+}
+
+.explore-destination-section__header
+  > button {
+  align-items: center;
+  background:
+    transparent;
+  border: 0;
+  color:
+    var(--travel-coral);
+  cursor: pointer;
+  display: flex;
+  font-size: 9px;
+  font-weight: 800;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+/* CARROSSEL */
+
+.explore-section-carousel {
+  position: relative;
+}
+
+.explore-section-track {
+  display: flex;
+  gap:
+    clamp(
+      12px,
+      1.2vw,
+      19px
+    );
+  overflow-x: auto;
+  padding:
+    5px 36px 9px;
+  scroll-behavior: smooth;
+  scroll-snap-type:
+    x proximity;
+  scrollbar-width: none;
+}
+
+.explore-section-track::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+  O card NÃO cresce de acordo
+  com a largura da tela.
+  Isso evita aquelas imagens gigantes.
+*/
+
+.explore-place-card {
+  flex:
+    0 0
+    clamp(
+      145px,
+      11.5vw,
+      205px
+    );
+  max-width: 205px;
+  min-width: 145px;
+  scroll-snap-align: start;
+}
+
+.explore-place-card__image {
+  aspect-ratio:
+    0.82;
+  background-position:
+    center;
+  background-size:
+    cover;
+  border-radius:
+    999px;
+  box-shadow:
+    0 8px 20px
+    rgba(
+      18,
+      26,
+      31,
+      0.11
+    );
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.explore-place-card__image::after {
+  background:
+    linear-gradient(
+      180deg,
+      transparent
+        47%,
+      rgba(
+        5,
+        12,
+        16,
+        0.78
+      )
+        100%
+    );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.explore-place-card__image
+  > button {
+  align-items: center;
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.94
+    );
+  border: 0;
+  border-radius: 50%;
+  color: #343a40;
+  cursor: pointer;
+  display: flex;
+  height: 29px;
+  justify-content: center;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 29px;
+  z-index: 4;
+}
+
+.explore-place-card__image
+  > button.is-favorite {
+  color:
+    var(--travel-coral);
+}
+
+/*
+  NOME CENTRALIZADO
+  e sempre visível.
+*/
+
+.explore-place-card__place {
+  align-items: center;
+  bottom: 18px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  left: 12px;
+  position: absolute;
+  right: 12px;
+  text-align: center;
+  z-index: 3;
+}
+
+.explore-place-card__place
+  strong {
+  font-size:
+    clamp(
+      13px,
+      0.95vw,
+      17px
+    );
+  letter-spacing:
+    -0.025em;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow-wrap:
+    anywhere;
+}
+
+.explore-place-card__place
+  span {
+  font-size: 9px;
+  line-height: 1.2;
+  opacity: 0.92;
+}
+
+.explore-place-card__meta {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding:
+    8px 4px 0;
+  text-align: center;
+}
+
+.explore-place-card__meta
+  span {
+  align-items: center;
+  color: #35393e;
+  display: flex;
+  font-size: 9px;
+  font-weight: 800;
+  gap: 4px;
+}
+
+.explore-place-card__meta
+  span svg {
+  color: #eda83b;
+}
+
+.explore-place-card__meta
+  small {
+  color: #92959a;
+  font-size: 7px;
+}
+
+/* SETAS */
+
+.explore-section-arrow {
+  align-items: center;
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.97
+    );
+  border:
+    1px solid
+    var(--travel-line);
+  border-radius: 50%;
+  box-shadow:
+    0 5px 16px
+    rgba(
+      20,
+      21,
+      27,
+      0.1
+    );
+  cursor: pointer;
+  display: flex;
+  height: 38px;
+  justify-content: center;
+  position: absolute;
+  top: 44%;
+  transform:
+    translateY(-50%);
+  width: 38px;
+  z-index: 8;
+}
+
+.explore-section-arrow--left {
+  left: 0;
+}
+
+.explore-section-arrow--right {
+  right: 0;
+}
+
+.explore-section-arrow:hover {
+  background:
+    var(--travel-teal-soft);
+  color:
+    var(--travel-teal-dark);
+}
+
+/*
+  Em monitores largos ficam
+  vários cards visíveis, sem
+  esticar as imagens.
+*/
+
+@media (
+  min-width: 1600px
+) {
+  .explore-place-card {
+    flex-basis: 190px;
+  }
+
+  .explore-section-track {
+    gap: 22px;
+  }
+}
+
+@media (
+  min-width: 2000px
+) {
+  .explore-place-card {
+    flex-basis: 200px;
+  }
+}
+
+/* NOTEBOOK */
+
+@media (
+  max-width: 1200px
+) {
+  .explore-place-card {
+    flex-basis:
+      clamp(
+        145px,
+        16vw,
+        180px
+      );
+  }
+
+  .explore-v2-copy {
+    max-width: 410px;
+  }
+
+  .explore-v2-copy h1 {
+    font-size:
+      clamp(
+        36px,
+        4vw,
+        50px
+      );
+  }
+}
+
+/* TABLET */
+
+@media (
+  max-width: 850px
+) {
+  .explore-discovery-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .explore-place-card {
+    flex-basis: 155px;
+  }
+
+  .explore-v2-hero {
+    height: 560px;
+  }
+
+  .explore-v2-copy {
+    max-width: 370px;
+  }
+}
+
+/* CELULAR */
+
+@media (
+  max-width: 650px
+) {
+  .explore-v2-hero {
+    height: 610px;
+  }
+
+  .explore-v2-copy {
+    background:
+      rgba(
+        255,
+        255,
+        255,
+        0.9
+      );
+    border:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.8
+      );
+    border-radius: 18px;
+    bottom: 18px;
+    left: 12px;
+    max-width: none;
+    padding: 18px;
+    right: 12px;
+    top: auto;
+    transform: none;
+  }
+
+  .explore-v2-copy h1 {
+    font-size: 35px;
+  }
+
+  .explore-place-card {
+    flex-basis: 140px;
+    min-width: 140px;
+  }
+
+  .explore-destination-section {
+    border-radius: 14px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .explore-destination-section__header {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .explore-destination-section__header
+    p {
+    display: none;
+  }
+
+  .explore-section-track {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  .explore-section-arrow {
+    height: 34px;
+    width: 34px;
+  }
+}
