@@ -26,6 +26,8 @@ type StandaloneVisitModalProps = {
   onSave: (visit: NewStandaloneVisit) => void;
 };
 
+type DatePrecision = "exact" | "month" | "year" | "unknown";
+
 type FormState = {
   place: string;
   placeType: StandaloneVisitRecord["placeType"];
@@ -34,7 +36,10 @@ type FormState = {
   country: string;
   visitCount: number;
   visitKind: StandaloneVisitKind;
-  period: string;
+  datePrecision: DatePrecision;
+  exactDate: string;
+  monthAndYear: string;
+  year: string;
   nights: number;
   wantsToReturn: boolean;
   note: string;
@@ -48,11 +53,24 @@ const initialForm: FormState = {
   country: "Brasil",
   visitCount: 1,
   visitKind: "day_trip",
-  period: "",
+  datePrecision: "unknown",
+  exactDate: "",
+  monthAndYear: "",
+  year: "",
   nights: 0,
   wantsToReturn: false,
   note: "",
 };
+
+const datePrecisionOptions: {
+  id: DatePrecision;
+  label: string;
+}[] = [
+  { id: "exact", label: "Data completa" },
+  { id: "month", label: "Mês e ano" },
+  { id: "year", label: "Somente ano" },
+  { id: "unknown", label: "Não lembro" },
+];
 
 const visitKinds: {
   id: StandaloneVisitKind;
@@ -60,10 +78,50 @@ const visitKinds: {
   detail: string;
   icon: typeof Sun;
 }[] = [
-  { id: "day_trip", label: "Passeio de um dia", detail: "Sem pernoite", icon: Sun },
-  { id: "overnight", label: "Com pernoite", detail: "Uma ou mais noites", icon: Moon },
-  { id: "long_stay", label: "Estadia ou base", detail: "Período mais longo", icon: Clock3 },
+  {
+    id: "day_trip",
+    label: "Passeio de um dia",
+    detail: "Sem pernoite",
+    icon: Sun,
+  },
+  {
+    id: "overnight",
+    label: "Com pernoite",
+    detail: "Uma ou mais noites",
+    icon: Moon,
+  },
+  {
+    id: "long_stay",
+    label: "Estadia ou base",
+    detail: "Período mais longo",
+    icon: Clock3,
+  },
 ];
+
+function formatVisitPeriod(form: FormState) {
+  if (form.datePrecision === "exact") {
+    const [year, month, day] = form.exactDate.split("-");
+
+    return `${day}/${month}/${year}`;
+  }
+
+  if (form.datePrecision === "month") {
+    const [year, month] = form.monthAndYear.split("-");
+
+    const formatted = new Intl.DateTimeFormat("pt-BR", {
+      month: "long",
+      year: "numeric",
+    }).format(new Date(Number(year), Number(month) - 1, 1));
+
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  }
+
+  if (form.datePrecision === "year") {
+    return form.year;
+  }
+
+  return "Datas não informadas";
+}
 
 export function StandaloneVisitModal({
   open,
@@ -74,9 +132,12 @@ export function StandaloneVisitModal({
   const [form, setForm] = useState<FormState>(initialForm);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
 
     const previousOverflow = document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
 
     function closeOnEscape(event: KeyboardEvent) {
@@ -87,23 +148,35 @@ export function StandaloneVisitModal({
     }
 
     window.addEventListener("keydown", closeOnEscape);
+
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
 
-  function updateField<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
-    setForm((current) => ({ ...current, [key]: value }));
+  function updateField<Key extends keyof FormState>(
+    key: Key,
+    value: FormState[Key],
+  ) {
+    setForm((current) => ({
+      ...current,
+      [key]: value,
+    }));
   }
 
   function changeVisitKind(visitKind: StandaloneVisitKind) {
     setForm((current) => ({
       ...current,
       visitKind,
-      nights: visitKind === "day_trip" ? 0 : Math.max(current.nights, 1),
+      nights:
+        visitKind === "day_trip"
+          ? 0
+          : Math.max(current.nights, 1),
     }));
   }
 
@@ -123,8 +196,11 @@ export function StandaloneVisitModal({
       country: form.country.trim(),
       visitCount: form.visitCount,
       visitKind: form.visitKind,
-      period: form.period.trim() || "Datas não informadas",
-      nights: form.visitKind === "day_trip" ? 0 : form.nights,
+      period: formatVisitPeriod(form),
+      nights:
+        form.visitKind === "day_trip"
+          ? 0
+          : form.nights,
       wantsToReturn: form.wantsToReturn,
       note: form.note.trim(),
       tripId: null,
@@ -134,7 +210,10 @@ export function StandaloneVisitModal({
   }
 
   return (
-    <div className="modal-backdrop" onMouseDown={closeModal}>
+    <div
+      className="modal-backdrop"
+      onMouseDown={closeModal}
+    >
       <section
         aria-labelledby={titleId}
         aria-modal="true"
@@ -144,33 +223,64 @@ export function StandaloneVisitModal({
       >
         <header className="visit-modal__header">
           <div>
-            <span className="card-eyebrow">Registro rápido</span>
-            <h2 id={titleId}>Adicionar um lugar que você já visitou</h2>
-            <p>Esse registro entra no seu histórico sem criar viagem ou roteiro.</p>
+            <span className="card-eyebrow">
+              Registro rápido
+            </span>
+
+            <h2 id={titleId}>
+              Adicionar um lugar que você já visitou
+            </h2>
+
+            <p>
+              Esse registro entra no seu histórico sem
+              criar viagem ou roteiro.
+            </p>
           </div>
-          <button aria-label="Fechar" className="modal-close" onClick={closeModal} type="button">
+
+          <button
+            aria-label="Fechar"
+            className="modal-close"
+            onClick={closeModal}
+            type="button"
+          >
             <X size={19} />
           </button>
         </header>
 
         <div className="independent-record-note">
           <Route size={20} />
+
           <div>
             <strong>Registro avulso</strong>
-            <span>A contagem do lugar será atualizada, mas o total de viagens continuará igual.</span>
+
+            <span>
+              A contagem do lugar será atualizada, mas o
+              total de viagens continuará igual.
+            </span>
           </div>
-          <span className="independent-record-note__status"><Check size={13} /> Sem viagem</span>
+
+          <span className="independent-record-note__status">
+            <Check size={13} />
+            Sem viagem
+          </span>
         </div>
 
-        <form className="visit-form" onSubmit={submitVisit}>
+        <form
+          className="visit-form"
+          onSubmit={submitVisit}
+        >
           <div className="form-grid">
             <label className="form-field form-field--wide">
               <span>Nome do lugar *</span>
+
               <div className="input-with-icon">
                 <MapPin size={17} />
+
                 <input
                   autoFocus
-                  onChange={(event) => updateField("place", event.target.value)}
+                  onChange={(event) =>
+                    updateField("place", event.target.value)
+                  }
                   placeholder="Ex.: Taíba"
                   required
                   value={form.place}
@@ -180,8 +290,15 @@ export function StandaloneVisitModal({
 
             <label className="form-field">
               <span>Tipo de lugar</span>
+
               <select
-                onChange={(event) => updateField("placeType", event.target.value as FormState["placeType"])}
+                onChange={(event) =>
+                  updateField(
+                    "placeType",
+                    event.target
+                      .value as FormState["placeType"],
+                  )
+                }
                 value={form.placeType}
               >
                 <option>Cidade</option>
@@ -192,20 +309,35 @@ export function StandaloneVisitModal({
             </label>
 
             <label className="form-field">
-              <span>Cidade ou município de referência *</span>
+              <span>
+                Cidade ou município de referência *
+              </span>
+
               <input
-                onChange={(event) => updateField("municipality", event.target.value)}
+                onChange={(event) =>
+                  updateField(
+                    "municipality",
+                    event.target.value,
+                  )
+                }
                 placeholder="Ex.: São Gonçalo do Amarante"
                 required
                 value={form.municipality}
               />
-              <small>Evita misturar lugares com nomes iguais e organiza o panorama regional.</small>
+
+              <small>
+                Evita misturar lugares com nomes iguais e
+                organiza o panorama regional.
+              </small>
             </label>
 
             <label className="form-field">
               <span>Estado ou região *</span>
+
               <input
-                onChange={(event) => updateField("region", event.target.value)}
+                onChange={(event) =>
+                  updateField("region", event.target.value)
+                }
                 placeholder="Ex.: Ceará"
                 required
                 value={form.region}
@@ -214,8 +346,11 @@ export function StandaloneVisitModal({
 
             <label className="form-field">
               <span>País *</span>
+
               <input
-                onChange={(event) => updateField("country", event.target.value)}
+                onChange={(event) =>
+                  updateField("country", event.target.value)
+                }
                 required
                 value={form.country}
               />
@@ -223,76 +358,237 @@ export function StandaloneVisitModal({
 
             <div className="form-field">
               <span>Quantas vezes você foi? *</span>
+
               <div className="visit-counter">
                 <button
                   aria-label="Diminuir quantidade"
                   disabled={form.visitCount === 1}
-                  onClick={() => updateField("visitCount", Math.max(1, form.visitCount - 1))}
+                  onClick={() =>
+                    updateField(
+                      "visitCount",
+                      Math.max(1, form.visitCount - 1),
+                    )
+                  }
                   type="button"
                 >
                   <Minus size={16} />
                 </button>
+
                 <strong>{form.visitCount}</strong>
+
                 <button
                   aria-label="Aumentar quantidade"
-                  onClick={() => updateField("visitCount", Math.min(99, form.visitCount + 1))}
+                  onClick={() =>
+                    updateField(
+                      "visitCount",
+                      Math.min(99, form.visitCount + 1),
+                    )
+                  }
                   type="button"
                 >
                   <Plus size={16} />
                 </button>
-                <span>{form.visitCount === 1 ? "visita" : "visitas"}</span>
+
+                <span>
+                  {form.visitCount === 1
+                    ? "visita"
+                    : "visitas"}
+                </span>
               </div>
             </div>
-
-            <label className="form-field">
-              <span>Quando aconteceu? <i>opcional</i></span>
-              <div className="input-with-icon">
-                <CalendarDays size={17} />
-                <input
-                  onChange={(event) => updateField("period", event.target.value)}
-                  placeholder="Ex.: 2024 e 2025"
-                  value={form.period}
-                />
-              </div>
-              <small>Se não lembrar, deixe em branco.</small>
-            </label>
           </div>
 
-          <fieldset className="visit-kind-fieldset">
-            <legend>Como foram essas visitas?</legend>
-            <div className="visit-kind-options">
-              {visitKinds.map(({ id, label, detail, icon: Icon }) => (
+          <div className="form-field form-field--wide">
+            <span>
+              Quanto você lembra sobre a data?
+            </span>
+
+            <div
+              aria-label="Precisão da data"
+              className="segmented-control"
+              role="group"
+            >
+              {datePrecisionOptions.map((option) => (
                 <button
-                  className={form.visitKind === id ? "visit-kind-option is-selected" : "visit-kind-option"}
-                  key={id}
-                  onClick={() => changeVisitKind(id)}
+                  aria-pressed={
+                    form.datePrecision === option.id
+                  }
+                  className={
+                    form.datePrecision === option.id
+                      ? "is-active"
+                      : ""
+                  }
+                  key={option.id}
+                  onClick={() =>
+                    updateField(
+                      "datePrecision",
+                      option.id,
+                    )
+                  }
                   type="button"
                 >
-                  <Icon size={19} />
-                  <span><strong>{label}</strong><small>{detail}</small></span>
-                  <i>{form.visitKind === id && <Check size={13} />}</i>
+                  {option.label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {form.datePrecision === "exact" && (
+            <label className="form-field form-field--wide">
+              <span>Data da visita *</span>
+
+              <div className="input-with-icon">
+                <CalendarDays size={17} />
+
+                <input
+                  onChange={(event) =>
+                    updateField(
+                      "exactDate",
+                      event.target.value,
+                    )
+                  }
+                  required
+                  type="date"
+                  value={form.exactDate}
+                />
+              </div>
+            </label>
+          )}
+
+          {form.datePrecision === "month" && (
+            <label className="form-field form-field--wide">
+              <span>Mês e ano da visita *</span>
+
+              <div className="input-with-icon">
+                <CalendarDays size={17} />
+
+                <input
+                  onChange={(event) =>
+                    updateField(
+                      "monthAndYear",
+                      event.target.value,
+                    )
+                  }
+                  required
+                  type="month"
+                  value={form.monthAndYear}
+                />
+              </div>
+            </label>
+          )}
+
+          {form.datePrecision === "year" && (
+            <label className="form-field form-field--wide">
+              <span>Ano da visita *</span>
+
+              <div className="input-with-icon">
+                <CalendarDays size={17} />
+
+                <input
+                  inputMode="numeric"
+                  max={new Date().getFullYear()}
+                  min="1900"
+                  onChange={(event) =>
+                    updateField("year", event.target.value)
+                  }
+                  placeholder="Ex.: 2024"
+                  required
+                  type="number"
+                  value={form.year}
+                />
+              </div>
+            </label>
+          )}
+
+          {form.datePrecision === "unknown" && (
+            <div className="form-field form-field--wide">
+              <small>
+                A visita será salva sem data e continuará
+                contando no total do lugar.
+              </small>
+            </div>
+          )}
+
+          <fieldset className="visit-kind-fieldset">
+            <legend>
+              Como foram essas visitas?
+            </legend>
+
+            <div className="visit-kind-options">
+              {visitKinds.map(
+                ({
+                  id,
+                  label,
+                  detail,
+                  icon: Icon,
+                }) => (
+                  <button
+                    className={
+                      form.visitKind === id
+                        ? "visit-kind-option is-selected"
+                        : "visit-kind-option"
+                    }
+                    key={id}
+                    onClick={() =>
+                      changeVisitKind(id)
+                    }
+                    type="button"
+                  >
+                    <Icon size={19} />
+
+                    <span>
+                      <strong>{label}</strong>
+                      <small>{detail}</small>
+                    </span>
+
+                    <i>
+                      {form.visitKind === id && (
+                        <Check size={13} />
+                      )}
+                    </i>
+                  </button>
+                ),
+              )}
             </div>
           </fieldset>
 
           {form.visitKind !== "day_trip" && (
             <label className="form-field form-field--nights">
-              <span>Total de noites nesse lugar</span>
+              <span>
+                Total de noites nesse lugar
+              </span>
+
               <input
                 min="1"
-                onChange={(event) => updateField("nights", Math.max(1, Number(event.target.value)))}
+                onChange={(event) =>
+                  updateField(
+                    "nights",
+                    Math.max(
+                      1,
+                      Number(event.target.value),
+                    ),
+                  )
+                }
                 type="number"
                 value={form.nights}
               />
-              <small>Informe o total aproximado considerando todas as visitas.</small>
+
+              <small>
+                Informe o total aproximado considerando
+                todas as visitas.
+              </small>
             </label>
           )}
 
           <label className="form-field form-field--wide">
-            <span>Observação <i>opcional</i></span>
+            <span>
+              Observação <i>opcional</i>
+            </span>
+
             <textarea
-              onChange={(event) => updateField("note", event.target.value)}
+              onChange={(event) =>
+                updateField("note", event.target.value)
+              }
               placeholder="Ex.: fui duas vezes apenas para passar o dia"
               rows={3}
               value={form.note}
@@ -302,15 +598,41 @@ export function StandaloneVisitModal({
           <label className="return-checkbox">
             <input
               checked={form.wantsToReturn}
-              onChange={(event) => updateField("wantsToReturn", event.target.checked)}
+              onChange={(event) =>
+                updateField(
+                  "wantsToReturn",
+                  event.target.checked,
+                )
+              }
               type="checkbox"
             />
-            <span><strong>Quero voltar</strong><small>O lugar continuará como visitado e também ganhará esse marcador.</small></span>
+
+            <span>
+              <strong>Quero voltar</strong>
+
+              <small>
+                O lugar continuará como visitado e também
+                ganhará esse marcador.
+              </small>
+            </span>
           </label>
 
           <footer className="visit-modal__actions">
-            <button className="filter-button" onClick={closeModal} type="button">Cancelar</button>
-            <button className="primary-button" type="submit"><Plus size={16} /> Salvar sem criar viagem</button>
+            <button
+              className="filter-button"
+              onClick={closeModal}
+              type="button"
+            >
+              Cancelar
+            </button>
+
+            <button
+              className="primary-button"
+              type="submit"
+            >
+              <Plus size={16} />
+              Salvar sem criar viagem
+            </button>
           </footer>
         </form>
       </section>
