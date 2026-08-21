@@ -18,15 +18,15 @@ Conforme novas visitas são registradas, o mapa evolui junto com o usuário.
 
 A plataforma está sendo projetada para permitir:
 
-- visualizar cidades visitadas em um atlas pessoal;
-- acompanhar a recorrência das viagens;
-- registrar diferentes visitas ao mesmo destino;
-- organizar memórias e experiências;
-- acompanhar indicadores pessoais de viagem;
-- salvar destinos para conhecer futuramente;
-- explorar novos lugares;
-- organizar viagens;
-- descobrir experiências por meio da comunidade.
+* visualizar cidades visitadas em um atlas pessoal;
+* acompanhar a recorrência das viagens;
+* registrar diferentes visitas ao mesmo destino;
+* organizar memórias e experiências;
+* acompanhar indicadores pessoais de viagem;
+* salvar destinos para conhecer futuramente;
+* explorar novos lugares;
+* organizar viagens;
+* descobrir experiências por meio da comunidade.
 
 ## Atlas pessoal
 
@@ -44,11 +44,27 @@ Com isso, viagens antigas, visitas rápidas e retornos frequentes podem fazer pa
 
 ## Insights pessoais
 
-Os registros alimentam uma área de análise com informações como cidades e países visitados, destinos mais recorrentes, evolução das viagens, períodos com maior atividade, avaliações, categorias de experiências e indicadores relacionados aos hábitos de viagem.
+Os registros alimentam uma área de análise com informações como:
 
-## Descoberta e planejamento
+* cidades e países visitados;
+* destinos mais recorrentes;
+* evolução das viagens;
+* períodos com maior atividade;
+* avaliações;
+* categorias de experiências;
+* indicadores relacionados aos hábitos de viagem.
 
-Além do histórico pessoal, o Atlas está sendo pensado como um espaço para descobrir novos destinos e experiências e organizar viagens futuras sem obrigar o usuário a começar imediatamente por um roteiro rígido.
+O objetivo é transformar registros individuais em uma visão clara da trajetória de cada viajante.
+
+## Descoberta
+
+Além do histórico pessoal, o Atlas está sendo pensado como um espaço para descobrir novos destinos e experiências.
+
+A proposta futura inclui recomendações baseadas em interesses, comportamento de viagem e contribuições da comunidade.
+
+## Planejamento
+
+O projeto também prevê ferramentas para organizar viagens futuras sem obrigar o usuário a começar imediatamente por um roteiro rígido.
 
 Destinos, lugares e ideias poderão existir independentemente e posteriormente serem utilizados durante o planejamento de uma viagem.
 
@@ -56,11 +72,23 @@ Destinos, lugares e ideias poderão existir independentemente e posteriormente s
 
 A evolução do Atlas inclui recursos sociais para compartilhamento de experiências e descoberta de lugares por meio de outros viajantes e moradores.
 
+A proposta é diferenciar diferentes tipos de experiência para tornar as recomendações mais relevantes.
+
 ## Estado atual
 
 O projeto está atualmente em fase de desenvolvimento do produto e consolidação da experiência visual.
 
-Já existem protótipos funcionais para navegação principal, exploração de destinos, perfil do viajante, mapa interativo, visualização de cidades visitadas, registro de múltiplas visitas, indicadores pessoais, gráficos de viagem e registro simplificado de experiências.
+Já existem protótipos funcionais para:
+
+* navegação principal;
+* exploração de destinos;
+* perfil do viajante;
+* mapa interativo;
+* visualização de cidades visitadas;
+* registro de múltiplas visitas;
+* indicadores pessoais;
+* gráficos de viagem;
+* registro simplificado de experiências.
 
 As funcionalidades continuam sendo evoluídas e integradas progressivamente às próximas etapas do produto.
 
