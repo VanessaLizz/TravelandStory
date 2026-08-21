@@ -49,6 +49,7 @@ import {
 import { AppHeader } from "@/components/AppHeader";
 import { ScratchWorldMap } from "@/components/ScratchWorldMap";
 import { StandaloneVisitModal } from "@/components/StandaloneVisitModal";
+import { ProfileVisitedMap } from "@/components/ProfileVisitedMap";
 import {
   expenseData,
   initialStandaloneVisits,
@@ -463,6 +464,8 @@ export function ProfileDashboard() {
             Adicionar visita
           </button>
         </section>
+
+        <ProfileVisitedMap />
 
         <section
           className="personal-atlas-card"

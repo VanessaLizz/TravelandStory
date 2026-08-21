@@ -1,5 +1,9 @@
-import { ExploreDashboard } from "@/components/ExploreDashboard";
+import {
+  ExploreDashboardV2,
+} from "@/components/ExploreDashboardV2";
 
 export default function Home() {
-  return <ExploreDashboard />;
+  return (
+    <ExploreDashboardV2 />
+  );
 }
