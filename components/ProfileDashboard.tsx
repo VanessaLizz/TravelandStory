@@ -7,16 +7,23 @@ import {
 } from "recharts";
 import {
   ArrowRight, BadgeDollarSign, Bookmark, CalendarDays, Camera, ChevronDown, Clock3,
-  Heart, MapPin, Plane, Plus, Repeat2, Route, Sparkles, Star, TrendingUp,
-  Trophy, UserRound,
+  CheckCircle2, Heart, History, MapPin, Moon, Plane, Plus, Repeat2, Route,
+  Sparkles, Star, Sun, TrendingUp, Trophy, UserRound,
 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ScratchWorldMap } from "@/components/ScratchWorldMap";
+import { StandaloneVisitModal } from "@/components/StandaloneVisitModal";
 import {
-  expenseData, personalMonthly, personalTopCities, personalTripsByYear,
-  personalVisited, personalWishlist,
+  expenseData, initialStandaloneVisits, personalMonthly, personalTopCities,
+  personalTripsByYear, personalVisited, personalWishlist,
 } from "@/data/demo";
-import type { MapLayer, MapLocation, MapMetric } from "@/types/travel";
+import type {
+  MapLayer,
+  MapLocation,
+  MapMetric,
+  NewStandaloneVisit,
+  StandaloneVisitKind,
+} from "@/types/travel";
 
 const personalLayers: { id: MapLayer; label: string }[] = [
   { id: "visited", label: "Visitadas" },
@@ -29,16 +36,97 @@ const metricLabels: { id: MapMetric; label: string }[] = [
   { id: "days", label: "Noites efetivas" },
 ];
 
+function normalizedLocationKey(...parts: string[]) {
+  return parts
+    .join("|")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("pt-BR")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function standaloneKindLabel(kind: StandaloneVisitKind) {
+  if (kind === "day_trip") return "Passeio de um dia";
+  if (kind === "overnight") return "Com pernoite";
+  return "Estadia ou base";
+}
+
 export function ProfileDashboard() {
   const [layer, setLayer] = useState<MapLayer>("visited");
   const [metric, setMetric] = useState<MapMetric>("bond");
   const locations = useMemo(() => layer === "wishlist" ? personalWishlist : personalVisited, [layer]);
   const [selected, setSelected] = useState<MapLocation>(personalVisited[0]);
+  const [standaloneVisits, setStandaloneVisits] = useState(initialStandaloneVisits);
+  const [visitModalOpen, setVisitModalOpen] = useState(false);
+  const [registrationNotice, setRegistrationNotice] = useState("");
+
+  const standaloneVisitTotal = useMemo(
+    () => standaloneVisits.reduce((total, visit) => total + visit.visitCount, 0),
+    [standaloneVisits],
+  );
+  const standaloneNights = useMemo(
+    () => standaloneVisits.reduce((total, visit) => total + visit.nights, 0),
+    [standaloneVisits],
+  );
 
   function changeLayer(nextLayer: MapLayer) {
     const nextLocations = nextLayer === "wishlist" ? personalWishlist : personalVisited;
     setLayer(nextLayer);
     setSelected(nextLocations[0]);
+  }
+
+  function saveStandaloneVisit(visit: NewStandaloneVisit) {
+    const newLocationKey = normalizedLocationKey(
+      visit.place,
+      visit.municipality,
+      visit.region,
+      visit.country,
+    );
+
+    setStandaloneVisits((current) => {
+      const existing = current.find((item) => normalizedLocationKey(
+        item.place,
+        item.municipality,
+        item.region,
+        item.country,
+      ) === newLocationKey);
+
+      if (!existing) {
+        return [
+          {
+            ...visit,
+            id: `standalone-${Date.now()}`,
+            createdAtLabel: "Adicionado agora",
+          },
+          ...current,
+        ];
+      }
+
+      return current.map((item) => item.id === existing.id ? {
+        ...item,
+        visitCount: item.visitCount + visit.visitCount,
+        nights: item.nights + visit.nights,
+        period: visit.period === "Datas não informadas" ? item.period : visit.period,
+        wantsToReturn: item.wantsToReturn || visit.wantsToReturn,
+        note: visit.note || item.note,
+        createdAtLabel: "Atualizado agora",
+      } : item);
+    });
+
+    setRegistrationNotice(
+      `${visit.place}: ${visit.visitCount} ${visit.visitCount === 1 ? "visita registrada" : "visitas registradas"} sem criar uma viagem.`,
+    );
+  }
+
+  function addOneStandaloneVisit(id: string) {
+    const place = standaloneVisits.find((visit) => visit.id === id)?.place;
+    setStandaloneVisits((current) => current.map((visit) => visit.id === id ? {
+      ...visit,
+      visitCount: visit.visitCount + 1,
+      createdAtLabel: "Atualizado agora",
+    } : visit));
+    setRegistrationNotice(`Mais uma visita a ${place ?? "esse lugar"} foi adicionada ao histórico.`);
   }
 
   return (
@@ -56,7 +144,7 @@ export function ProfileDashboard() {
             <div><strong>12</strong><span>viagens</span></div><i />
             <div><strong>115</strong><span>noites</span></div>
           </div>
-          <button className="primary-button" type="button"><Plus size={17} /> Registrar viagem</button>
+          <button className="primary-button" onClick={() => setVisitModalOpen(true)} type="button"><Plus size={17} /> Registrar lugar visitado</button>
         </section>
 
         <section className="dashboard-card map-dashboard-card profile-map-card">
@@ -93,6 +181,69 @@ export function ProfileDashboard() {
               <div className="calculation-note"><Clock3 size={17} /><div><strong>{layer === "visited" ? "Tempo corrigido" : "Lista independente"}</strong><span>{layer === "visited" ? "Deslocamentos para outras cidades são descontados da cidade-base." : "Você não precisa criar uma viagem para organizar estes lugares."}</span></div></div>
               <button className="panel-link" type="button">{layer === "visited" ? "Abrir diário da cidade" : "Abrir lista de lugares"}<ArrowRight size={16} /></button>
             </aside>
+          </div>
+        </section>
+
+        <section className="dashboard-card standalone-visits-section" id="visitas-avulsas">
+          <div className="card-toolbar standalone-visits-toolbar">
+            <div>
+              <span className="card-eyebrow">Histórico independente</span>
+              <h2>Lugares visitados sem criar uma viagem</h2>
+              <p>Registre bate-voltas, passeios antigos e retornos mesmo quando não existe roteiro.</p>
+            </div>
+            <button className="primary-button" onClick={() => setVisitModalOpen(true)} type="button">
+              <Plus size={16} /> Adicionar lugar
+            </button>
+          </div>
+
+          <div className="standalone-visits-summary">
+            <span><History size={16} /><strong>{standaloneVisits.length}</strong> lugares registrados</span>
+            <span><Repeat2 size={16} /><strong>{standaloneVisitTotal}</strong> visitas avulsas</span>
+            <span><Moon size={16} /><strong>{standaloneNights}</strong> noites informadas</span>
+            <span className="standalone-visits-summary__independent"><CheckCircle2 size={16} /><strong>0</strong> viagens criadas</span>
+          </div>
+
+          {registrationNotice && (
+            <div className="registration-notice" role="status">
+              <CheckCircle2 size={17} />
+              <span>{registrationNotice}</span>
+              <button aria-label="Fechar aviso" onClick={() => setRegistrationNotice("")} type="button">×</button>
+            </div>
+          )}
+
+          <div className="standalone-visit-list">
+            {standaloneVisits.map((visit) => (
+              <article className="standalone-visit-row" key={visit.id}>
+                <div className={`standalone-visit-row__icon standalone-visit-row__icon--${visit.visitKind}`}>
+                  {visit.visitKind === "day_trip" ? <Sun size={20} /> : <Moon size={20} />}
+                </div>
+                <div className="standalone-visit-row__place">
+                  <div>
+                    <strong>{visit.place}</strong>
+                    <span>{visit.placeType}</span>
+                    {visit.wantsToReturn && <span className="return-pill"><Repeat2 size={11} /> Quero voltar</span>}
+                  </div>
+                  <p><MapPin size={13} /> {visit.municipality}, {visit.region} · {visit.country}</p>
+                  {visit.note && <small>{visit.note}</small>}
+                </div>
+                <div className="standalone-visit-row__metric">
+                  <strong>{visit.visitCount}×</strong>
+                  <span>{visit.visitCount === 1 ? "visita" : "visitas"}</span>
+                </div>
+                <div className="standalone-visit-row__metric">
+                  <strong>{visit.nights}</strong>
+                  <span>{visit.nights === 1 ? "noite" : "noites"}</span>
+                </div>
+                <div className="standalone-visit-row__period">
+                  <strong>{standaloneKindLabel(visit.visitKind)}</strong>
+                  <span><CalendarDays size={12} /> {visit.period}</span>
+                  <small>{visit.createdAtLabel} · sem viagem vinculada</small>
+                </div>
+                <button className="add-return-button" onClick={() => addOneStandaloneVisit(visit.id)} type="button">
+                  <Plus size={15} /> Somar 1 visita
+                </button>
+              </article>
+            ))}
           </div>
         </section>
 
@@ -202,6 +353,11 @@ export function ProfileDashboard() {
           </div>
         </section>
       </main>
+      <StandaloneVisitModal
+        onClose={() => setVisitModalOpen(false)}
+        onSave={saveStandaloneVisit}
+        open={visitModalOpen}
+      />
     </div>
   );
 }

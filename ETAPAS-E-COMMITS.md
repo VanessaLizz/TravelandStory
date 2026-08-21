@@ -12,16 +12,23 @@ git add .
 git commit -m "feat: cria prototipo visual do atlas de viagens"
 ```
 
-## Etapa 2 — Organização do front
+## Microetapa atual — Visitas sem viagem
 
-Será feita em microcommits separados:
+O front permite registrar lugares antigos e bate-voltas sem criar viagem:
 
-1. `refactor: separa tipos e dados demonstrativos`
-2. `refactor: extrai componentes de navegacao e resumo`
-3. `refactor: extrai mapa e painel de cidade`
-4. `refactor: extrai indicadores do perfil`
+1. formulário de registro avulso;
+2. quantidade de vezes que o lugar foi visitado;
+3. separação entre passeio de um dia, pernoite e estadia;
+4. soma de visitas repetidas sem duplicar o lugar;
+5. contagem independente que não altera o total de viagens.
 
-## Etapa 3 — Pesquisa geográfica real
+Microcommit sugerido:
+
+```bash
+git commit -m "feat: permite registrar visitas sem criar viagem"
+```
+
+## Próxima etapa — Pesquisa geográfica real
 
 1. `feat: cria contrato do servico de cidades`
 2. `feat: adiciona busca de cidades com dados simulados`

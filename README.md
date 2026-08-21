@@ -81,12 +81,19 @@ atlas-social-viagens-completo/
 - mapa raspadinha preto e dourado com cidades simuladas;
 - zoom animado por cursor, foco e controles manuais;
 - camadas de visitados, lista de desejos e comunidade;
+- registro de lugares visitados sem criar viagem ou roteiro;
+- quantidade de visitas avulsas, incluindo bate-voltas sem pernoite;
+- soma automática quando o mesmo lugar é registrado novamente;
 - intensidade pessoal por vínculo, número de visitas ou noites efetivas;
 - painel contextual que muda conforme a cidade selecionada;
 - gráficos de barras, linhas, áreas e pizza com tooltips;
 - comparações entre visitas, desejos, retornos e recomendações locais;
 - visão opcional de gastos pessoais por categoria;
 - layout adaptado para telas menores.
+
+Os registros criados pelo formulário ainda ficam apenas no estado do front-end e
+são reiniciados ao atualizar a página. A persistência será adicionada na etapa
+de banco de dados.
 
 Consulte `LEIA-PRIMEIRO.md` para iniciar a nova pasta e
 `ETAPAS-E-COMMITS.md` para o fluxo dos próximos microcommits.

@@ -1,4 +1,8 @@
-import type { MapLocation, RankingLocation } from "@/types/travel";
+import type {
+  MapLocation,
+  RankingLocation,
+  StandaloneVisitRecord,
+} from "@/types/travel";
 
 export const personalVisited: MapLocation[] = [
   { id: "fortaleza", city: "Fortaleza", country: "Brasil", x: 351, y: 317, visits: 7, days: 46, places: 18, returnRate: 86, localScore: 91, lastActivity: "Julho de 2026", color: "#22c55e" },
@@ -88,4 +92,39 @@ export const expenseData = [
   { name: "Passeios", value: 21, color: "#f59e0b" },
   { name: "Compras", value: 10, color: "#8b5cf6" },
   { name: "Outros", value: 6, color: "#94a3b8" },
+];
+
+export const initialStandaloneVisits: StandaloneVisitRecord[] = [
+  {
+    id: "standalone-taiba",
+    place: "Taíba",
+    placeType: "Praia/localidade",
+    municipality: "São Gonçalo do Amarante",
+    region: "Ceará",
+    country: "Brasil",
+    visitCount: 2,
+    visitKind: "day_trip",
+    period: "Datas não informadas",
+    nights: 0,
+    wantsToReturn: true,
+    note: "Duas visitas para passar o dia.",
+    createdAtLabel: "Registro histórico",
+    tripId: null,
+  },
+  {
+    id: "standalone-canoa-quebrada",
+    place: "Canoa Quebrada",
+    placeType: "Praia/localidade",
+    municipality: "Aracati",
+    region: "Ceará",
+    country: "Brasil",
+    visitCount: 1,
+    visitKind: "overnight",
+    period: "Julho de 2025",
+    nights: 2,
+    wantsToReturn: true,
+    note: "Fim de semana sem roteiro cadastrado.",
+    createdAtLabel: "Adicionado em agosto de 2026",
+    tripId: null,
+  },
 ];
