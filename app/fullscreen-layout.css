@@ -1,0 +1,247 @@
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/*
+  Header ocupa toda a largura.
+*/
+
+.travel-header__inner {
+  box-sizing:
+    border-box;
+
+  max-width:
+    none !important;
+
+  padding-left:
+    clamp(
+      18px,
+      2.4vw,
+      42px
+    ) !important;
+
+  padding-right:
+    clamp(
+      18px,
+      2.4vw,
+      42px
+    ) !important;
+
+  width:
+    100% !important;
+}
+
+/*
+  EXPLORAR
+*/
+
+.travel-explore-page {
+  box-sizing:
+    border-box;
+
+  max-width:
+    none !important;
+
+  width:
+    100% !important;
+}
+
+.travel-map-hero {
+  width:
+    100% !important;
+}
+
+/*
+  Seções que ficam abaixo do mapa
+  também passam a usar a tela.
+*/
+
+.destination-explore-section,
+.community-travel-section,
+.travel-return-note {
+  box-sizing:
+    border-box;
+
+  margin-left:
+    0 !important;
+
+  margin-right:
+    0 !important;
+
+  max-width:
+    none !important;
+
+  width:
+    100% !important;
+}
+
+.destination-explore-section {
+  padding-left:
+    clamp(
+      20px,
+      3vw,
+      52px
+    ) !important;
+
+  padding-right:
+    clamp(
+      20px,
+      3vw,
+      52px
+    ) !important;
+}
+
+.community-travel-section {
+  padding-left:
+    clamp(
+      20px,
+      3vw,
+      52px
+    ) !important;
+
+  padding-right:
+    clamp(
+      20px,
+      3vw,
+      52px
+    ) !important;
+}
+
+.travel-return-note {
+  margin-bottom:
+    40px !important;
+}
+
+/*
+  PERFIL
+*/
+
+.travel-profile-page {
+  box-sizing:
+    border-box;
+
+  margin-left:
+    0 !important;
+
+  margin-right:
+    0 !important;
+
+  max-width:
+    none !important;
+
+  padding-left:
+    clamp(
+      16px,
+      1.8vw,
+      30px
+    ) !important;
+
+  padding-right:
+    clamp(
+      16px,
+      1.8vw,
+      30px
+    ) !important;
+
+  width:
+    100% !important;
+}
+
+.profile-app-intro {
+  box-sizing:
+    border-box;
+
+  width:
+    100%;
+}
+
+.profile-map-refresh {
+  width:
+    100%;
+}
+
+/*
+  Cards e dashboards existentes
+  do perfil também podem usar
+  a largura disponível.
+*/
+
+.travel-profile-page
+  .travel-surface,
+.travel-profile-page
+  .profile-dashboard-grid,
+.travel-profile-page
+  .profile-country-panorama,
+.travel-profile-page
+  .standalone-visits-section,
+.travel-profile-page
+  .diary-preview {
+  box-sizing:
+    border-box;
+
+  max-width:
+    none !important;
+}
+
+/*
+  Telas muito grandes:
+  aproveita mais espaço sem deixar
+  os elementos colados às bordas.
+*/
+
+@media (
+  min-width: 1600px
+) {
+  .travel-header__inner {
+    padding-left:
+      48px !important;
+
+    padding-right:
+      48px !important;
+  }
+
+  .travel-profile-page {
+    padding-left:
+      32px !important;
+
+    padding-right:
+      32px !important;
+  }
+
+  .destination-explore-section,
+  .community-travel-section {
+    padding-left:
+      48px !important;
+
+    padding-right:
+      48px !important;
+  }
+}
+
+@media (
+  max-width: 760px
+) {
+  .travel-profile-page {
+    padding-left:
+      12px !important;
+
+    padding-right:
+      12px !important;
+  }
+
+  .destination-explore-section,
+  .community-travel-section {
+    padding-left:
+      14px !important;
+
+    padding-right:
+      14px !important;
+  }
+}
