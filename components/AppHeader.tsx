@@ -15,8 +15,8 @@ import {
 
 const navigation = [
   { href: "/", label: "Explorar", icon: Compass },
-  { href: "/perfil", label: "Meu mapa", icon: Map },
-  { href: "/#destinos", label: "Destinos", icon: MapPin },
+  { href: "/mapa", label: "Mapa", icon: Map },
+  { href: "/perfil", label: "Perfil", icon: MapPin },
   { href: "/#comunidade", label: "Comunidade", icon: UsersRound },
 ];
 
@@ -25,6 +25,7 @@ export function AppHeader() {
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
+    if (href === "/mapa") return pathname === "/mapa";
     if (href === "/perfil") return pathname === "/perfil";
     return false;
   }
