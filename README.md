@@ -1,99 +1,79 @@
-# Atlas Social de Viagens
+# Atlas
 
-Protótipo visual do front-end de uma rede social de viagens centrada em um atlas pessoal por cidade.
+**Seu mundo, cidade por cidade.**
 
-Nesta etapa, todos os dados são simulados. Ainda não existem autenticação, banco de dados nem chamadas a APIs externas.
+Atlas é uma plataforma de viagens em desenvolvimento que combina **atlas pessoal, diário de viagens, descoberta de destinos e planejamento** em uma única experiência.
 
-## Requisitos
+O projeto nasce da ideia de transformar o histórico de viagens de cada pessoa em uma representação visual do mundo que ela realmente conhece.
 
-- Node.js 22.13 ou superior
-- npm
-- Git
+## Sobre o projeto
 
-## Como executar no VS Code
+O Atlas utiliza o mapa como elemento central da experiência.
 
-Este pacote é completo e independente. Não copie os arquivos sobre uma versão
-anterior: basta extrair o ZIP e usar a pasta criada.
+Em vez de simplesmente marcar países como “visitados”, o objetivo é representar a relação do usuário com **cada cidade**, permitindo visualizar onde esteve e quais destinos fazem parte de sua história.
 
-1. Extraia a pasta `atlas-social-viagens-completo` do ZIP.
-2. Abra essa pasta no VS Code.
-3. Abra o terminal integrado.
-4. Instale as dependências:
+Conforme novas visitas são registradas, o mapa evolui junto com o usuário.
 
-```bash
-npm install
-```
+## Experiência proposta
 
-5. Inicie o ambiente local:
+A plataforma está sendo projetada para permitir:
 
-```bash
-npm run dev
-```
+- visualizar cidades visitadas em um atlas pessoal;
+- acompanhar a recorrência das viagens;
+- registrar diferentes visitas ao mesmo destino;
+- organizar memórias e experiências;
+- acompanhar indicadores pessoais de viagem;
+- salvar destinos para conhecer futuramente;
+- explorar novos lugares;
+- organizar viagens;
+- descobrir experiências por meio da comunidade.
 
-6. Abra [http://localhost:3000](http://localhost:3000).
+## Atlas pessoal
 
-## Verificações antes de cada commit
+Um dos principais conceitos do projeto é a representação visual das cidades visitadas.
 
-```bash
-npm run lint
-npm run build
-```
+As cidades ganham diferentes níveis de destaque conforme a relação do usuário com aquele destino, permitindo que o mapa represente não apenas **onde a pessoa esteve**, mas também **quanto aquele lugar faz parte de sua trajetória**.
 
-## Estrutura inicial
+Destinos apenas salvos para viagens futuras permanecem separados do histórico de lugares efetivamente visitados.
 
-```text
-atlas-social-viagens-completo/
-├── app/
-│   ├── globals.css
-│   ├── layout.tsx
-│   ├── page.tsx
-│   └── perfil/
-│       └── page.tsx
-├── components/
-│   ├── AppHeader.tsx
-│   ├── GeneralDashboard.tsx
-│   ├── ProfileDashboard.tsx
-│   └── ScratchWorldMap.tsx
-├── data/
-│   └── demo.ts
-├── public/
-│   ├── favicon.svg
-│   └── og.png
-├── scripts/
-│   └── dev.mjs
-├── types/
-│   └── travel.ts
-├── .env.example
-├── .gitignore
-├── LEIA-PRIMEIRO.md
-├── ETAPAS-E-COMMITS.md
-├── eslint.config.mjs
-├── next.config.ts
-├── package-lock.json
-├── package.json
-└── tsconfig.json
-```
+## Diário e histórico de viagens
 
-## Situação atual
+O Atlas pretende permitir que cada usuário construa um histórico próprio de viagens, incluindo diferentes visitas à mesma cidade e registros realizados mesmo quando não existe uma viagem ou roteiro previamente criado.
 
-- visão geral da comunidade em `/`;
-- dashboard pessoal em `/perfil`;
-- mapa raspadinha preto e dourado com cidades simuladas;
-- zoom animado por cursor, foco e controles manuais;
-- camadas de visitados, lista de desejos e comunidade;
-- registro de lugares visitados sem criar viagem ou roteiro;
-- quantidade de visitas avulsas, incluindo bate-voltas sem pernoite;
-- soma automática quando o mesmo lugar é registrado novamente;
-- intensidade pessoal por vínculo, número de visitas ou noites efetivas;
-- painel contextual que muda conforme a cidade selecionada;
-- gráficos de barras, linhas, áreas e pizza com tooltips;
-- comparações entre visitas, desejos, retornos e recomendações locais;
-- visão opcional de gastos pessoais por categoria;
-- layout adaptado para telas menores.
+Com isso, viagens antigas, visitas rápidas e retornos frequentes podem fazer parte do mesmo histórico pessoal.
 
-Os registros criados pelo formulário ainda ficam apenas no estado do front-end e
-são reiniciados ao atualizar a página. A persistência será adicionada na etapa
-de banco de dados.
+## Insights pessoais
 
-Consulte `LEIA-PRIMEIRO.md` para iniciar a nova pasta e
-`ETAPAS-E-COMMITS.md` para o fluxo dos próximos microcommits.
+Os registros alimentam uma área de análise com informações como cidades e países visitados, destinos mais recorrentes, evolução das viagens, períodos com maior atividade, avaliações, categorias de experiências e indicadores relacionados aos hábitos de viagem.
+
+## Descoberta e planejamento
+
+Além do histórico pessoal, o Atlas está sendo pensado como um espaço para descobrir novos destinos e experiências e organizar viagens futuras sem obrigar o usuário a começar imediatamente por um roteiro rígido.
+
+Destinos, lugares e ideias poderão existir independentemente e posteriormente serem utilizados durante o planejamento de uma viagem.
+
+## Comunidade
+
+A evolução do Atlas inclui recursos sociais para compartilhamento de experiências e descoberta de lugares por meio de outros viajantes e moradores.
+
+## Estado atual
+
+O projeto está atualmente em fase de desenvolvimento do produto e consolidação da experiência visual.
+
+Já existem protótipos funcionais para navegação principal, exploração de destinos, perfil do viajante, mapa interativo, visualização de cidades visitadas, registro de múltiplas visitas, indicadores pessoais, gráficos de viagem e registro simplificado de experiências.
+
+As funcionalidades continuam sendo evoluídas e integradas progressivamente às próximas etapas do produto.
+
+## Tecnologias
+
+O Atlas está sendo desenvolvido como uma aplicação web moderna utilizando tecnologias do ecossistema JavaScript e TypeScript.
+
+## Status
+
+**Em desenvolvimento.**
+
+O nome **Atlas** é atualmente o nome utilizado pelo projeto e poderá ser revisado antes do lançamento comercial.
+
+---
+
+© Atlas. Projeto em desenvolvimento.
